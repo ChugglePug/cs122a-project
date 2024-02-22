@@ -8,9 +8,9 @@ from src import project
 
 # personal information should go here
 my_connection = {
-    'user': 'root',
-    'password': 'J5m31t14G19',
-    'database': 'cs122a_project'
+    'user': '',
+    'password': '',
+    'database': ''
 }
 
 
