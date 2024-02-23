@@ -13,6 +13,9 @@ my_connection = {
     'database': ''
 }
 
-
 if __name__ == '__main__':
-    project.main(sys.argv, my_connection)
+    input_args = ['project.py']
+    # Error checking is done somewhere else
+    for arg in input('python3 project.py ').split():
+        input_args.append(arg)
+    project.main(input_args, my_connection)
