@@ -5,14 +5,40 @@
 
 import sys
 import mysql.connector
+from . import database as db
+from typing import Any
 
 
-def main(args: list[str], connection_info: dict) -> None:
-    connection = mysql.connector.connect(**connection_info)
+def main(args: list[str], connection_info: dict[str, str]) -> Any:
+    """
+    Main process
+    :param args:    sequence of args. Starts with the name of file
+    :param connection_info: Required information which mysql.connector needs to run
+    :return: Varies
+    """
 
-    with connection as cnx:
-        cursor = connection.cursor()
-        pass
+    # User might not have database created yet, so one is created if so
+    database_name = connection_info['database']
+
+    with mysql.connector.connect(**{key: value for key, value in connection_info.items() if key != 'database'}) as cnx:
+        try:
+            cnx.start_transaction()
+            cursor = cnx.cursor()
+
+            db.create_database(cursor, database_name)
+
+            # TODO - implement functions here in elif chain
+            # Remember to check what is supposed to be returned
+            if args[1] == 'import':
+                # TODO - check what return should be
+                return_value = db.load_database(cursor, args[2])
+
+            # save any changes to database
+            cnx.commit()
+
+        # something went wrong
+        except BaseException:
+            cnx.rollback()
 
 
 if __name__ == '__main__':
@@ -22,5 +48,4 @@ if __name__ == '__main__':
         'database': 'cs122a'
     }
     # TODO - Delete prior to submission
-    raise RuntimeError('This was probably not meant to be run. Remove exception if so')
     main(sys.argv, autograder_connection)
