@@ -32,6 +32,36 @@ def main(args: list[str], connection_info: dict[str, str]) -> Any:
             if args[1] == 'import':
                 # TODO - check what return should be
                 return_value = db.load_database(cursor, args[2])
+            if args[1] == 'insertStudent':
+                # TODO - do something
+                pass
+            if args[1] == 'addEmail':
+                # TODO - do something
+                pass
+            if args[1] == 'deleteStudent':
+                # TODO - do something
+                pass
+            if args[1] == 'insertMachine':
+                # TODO - do something
+                pass
+            if args[1] == 'updateCourse':
+                # TODO - do something
+                pass
+            if args[1] == 'listCourse':
+                # TODO - do something
+                pass
+            if args[1] == 'popularCourse':
+                # TODO - do something
+                pass
+            if args[1] == 'adminEmails':
+                # TODO - do something
+                pass
+            if args[1] == 'activeStudent':
+                # TODO - do something
+                pass
+            if args[1] == 'machineUsage':
+                # TODO - do something
+                pass
 
             # save any changes to database
             cnx.commit()
@@ -39,6 +69,8 @@ def main(args: list[str], connection_info: dict[str, str]) -> Any:
         # something went wrong
         except BaseException:
             cnx.rollback()
+
+
 
 
 if __name__ == '__main__':
