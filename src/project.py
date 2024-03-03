@@ -6,6 +6,7 @@
 import sys
 import mysql.connector
 from . import database as db
+from . import student
 from typing import Any
 
 
@@ -33,10 +34,10 @@ def main(args: list[str], connection_info: dict[str, str]) -> Any:
                 # TODO - check what return should be
                 return_value = db.load_database(cursor, args[2])
             if args[1] == 'insertStudent':
-                # TODO - do something
+                return_value = student.add_student(cursor, args[2:])
                 pass
             if args[1] == 'addEmail':
-                # TODO - do something
+                return_value = student.add_email(cursor, args[2:])
                 pass
             if args[1] == 'deleteStudent':
                 # TODO - do something
