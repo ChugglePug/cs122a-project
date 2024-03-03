@@ -3,9 +3,9 @@
 # Manages creation and loading of database
 # TODO - ask where the test folders will be located
 
-import mysql.connector
 from pathlib import Path
 from mysql.connector.abstracts import MySQLCursorAbstract
+from .parsing import format_list
 
 
 def _drop_all_tables(cursor):
@@ -32,93 +32,74 @@ def _load_schema(cursor):
 
 def _load_user(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'users.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO User (UCINetID, firstName, middleName, lastName) 
-                VALUES (%s, %s, %s, %s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO User (UCINetID, firstName, middleName, lastName) 
+            VALUES (%s, %s, %s, %s)""", values)
 
 
 def _load_admin(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'admins.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO Administrator (UCINetID) 
-                VALUES (%s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO Administrator (UCINetID) 
+            VALUES (%s)""", values)
 
 
 def _load_student(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'students.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO Student (UCINetID) 
-                VALUES (%s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO Student (UCINetID) 
+            VALUES (%s)""", values)
 
 
 def _load_emails(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'emails.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO UserEmails (UCINetID, email) 
-                VALUES (%s, %s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO UserEmails (UCINetID, email) 
+            VALUES (%s, %s)""", values)
 
 
 def _load_courses(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'courses.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO Course (courseID, title, quarter) 
-                VALUES (%s, %s, %s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO Course (courseID, title, quarter) 
+            VALUES (%s, %s, %s)""", values)
 
 
 def _load_project(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'projects.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO Project (projectID, name, description, courseID) 
-                VALUES (%s, %s, %s, %s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO Project (projectID, name, description, courseID) 
+            VALUES (%s, %s, %s, %s)""", values)
 
 
 def _load_machine(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'machines.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO Machine (machineID, hostname, IPAddress, operationalStatus, location) 
-                VALUES (%s, %s, %s, %s, %s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO Machine (machineID, hostname, IPAddress, operationalStatus, location) 
+            VALUES (%s, %s, %s, %s, %s)""", values)
 
 
 def _load_use(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'use.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO studentUse (projectID, UCINetID, machineID, startDate, endDate)
-                VALUES (%s, %s, %s, %s, %s)
-            """, values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO studentUse (projectID, UCINetID, machineID, startDate, endDate)
+            VALUES (%s, %s, %s, %s, %s)""", values)
 
 
 def _load_manage(cursor: MySQLCursorAbstract, folder_name):
     path = Path(__file__).parent.parent / folder_name / 'manage.csv'
-    with open(path) as f:
-        for line in f.readlines():
-            values = line.strip().split(',')
-            cursor.execute("""
-                INSERT INTO manages (UCINetID, machineID) 
-                VALUES (%s, %s)""", values)
+    for values in _load_values_from_file(path):
+        cursor.execute("""
+            INSERT INTO manages (UCINetID, machineID) 
+            VALUES (%s, %s)""", values)
 
 
 def load_database(cursor: MySQLCursorAbstract, folder_name: str):
@@ -147,3 +128,11 @@ def create_database(cursor: MySQLCursorAbstract, database_name):
     """Create a database if it does not exist yet"""
     cursor.execute(f"CREATE DATABASE IF NOT EXISTS {database_name}")
     cursor.execute(f"USE {database_name}")
+
+
+def _load_values_from_file(path: Path) -> list[str]:
+    with open(path, 'r') as f:
+        for line in f.readlines():
+            values = line.strip().split(',')
+            # Replace 'NULL' strings with None for NULL values in a case-insensitive manner
+            yield format_list(values)
