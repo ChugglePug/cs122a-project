@@ -1,92 +1,78 @@
--- TODO - check if valid schema attrs
-
--- Define User and their emails
-CREATE TABLE User (
-    UCINetID VARCHAR(20),
-    firstName VARCHAR(20),
-    middleName VARCHAR(20),
-    lastName VARCHAR(20),
-    PRIMARY KEY (UCINetID)
+-- User Table
+CREATE TABLE Users (
+    UCINetID VARCHAR(20) PRIMARY KEY NOT NULL,
+    FirstName VARCHAR(50),
+    MiddleName VARCHAR(50),
+    LastName VARCHAR(50)
 );
 
--- Define user email
+-- User Email Multivalue Attr
 CREATE TABLE UserEmails (
-	UCINetID VARCHAR(20),
-    email VARCHAR(30) NOT NULL,
+	UCINetID VARCHAR(20) NOT NULL,
+    Email VARCHAR(30) NOT NULL,
 	PRIMARY KEY (UCINetID, email),
-    FOREIGN KEY (UCINetID) REFERENCES User(UCINetID)
-        ON DELETE CASCADE
+    FOREIGN KEY (UCINetID) REFERENCES Users(UCINetID)
+      ON DELETE CASCADE
 );
 
--- Student extends User
-CREATE TABLE Student (
-	UCINetID VARCHAR(20),
-    PRIMARY KEY (UCINetID),
-	FOREIGN KEY (UCINetID) REFERENCES User(UCINetID)
+-- Student Delta Table
+CREATE TABLE Students (
+    UCINetID VARCHAR(20) PRIMARY KEY NOT NULL,
+    FOREIGN KEY (UCINetID) REFERENCES Users(UCINetID)
+      ON DELETE CASCADE
 );
 
--- Administrator extends User
-CREATE TABLE Administrator (
-	UCINetID VARCHAR(20),
-    PRIMARY KEY (UCINetID),
-    FOREIGN KEY (UCINetID) REFERENCES User(UCINetID)
+-- Administrator Delta Table
+CREATE TABLE Administrators (
+    UCINetID VARCHAR(20) PRIMARY KEY NOT NULL,
+    FOREIGN KEY (UCINetID) REFERENCES Users(UCINetID)
+      ON DELETE CASCADE
 );
 
--- Define Course
-CREATE TABLE Course (
-	courseID INTEGER,
-    title VARCHAR(100),
-	-- Assumes that quarter is in the format
-	-- of F22 (For Fall quarter 2022)
-    quarter CHAR(3),
-    PRIMARY KEY (courseID)
+-- Course Table
+CREATE TABLE Courses (
+    CourseID INT PRIMARY KEY NOT NULL,
+    Title VARCHAR(100),
+    Quarter VARCHAR(20)
 );
 
-
--- Define Project
--- Responsible for 1:N course project relation with forced
--- participation on the project side
-CREATE TABLE Project (
-    projectID INTEGER,
-    courseID INTEGER NOT NULL,
-    name VARCHAR(20),
-    description VARCHAR(100),
-    PRIMARY KEY (projectID),
-    FOREIGN KEY (courseID) REFERENCES Course(courseID)
+-- Project Table
+CREATE TABLE Projects (
+    ProjectID INT PRIMARY KEY NOT NULL,
+    Name VARCHAR(100),
+    Description TEXT,
+    CourseID INT NOT NULL,
+    FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
 );
 
-
--- Define Machine
-CREATE TABLE Machine (
-    machineID INTEGER,
-    -- max ip4 address char length in decimal
+-- Machine Table
+CREATE TABLE Machines (
+    MachineID INT PRIMARY KEY NOT NULL,
     IPAddress VARCHAR(15),
-    hostname VARCHAR(20),
-    operationalStatus ENUM('Active', 'Down'),
-    location VARCHAR(20),
-    PRIMARY KEY (machineID)
+    OperationalStatus VARCHAR(50),
+    Location VARCHAR(255),
+    Hostname VARCHAR(255)
 );
 
 
--- Student, project, machine relation ('use' relation)
-CREATE TABLE studentUse (
-    UCINetID VARCHAR(20),
-    projectID INTEGER,
-    machineID INTEGER,
-    startDate DATETIME,
-    endDate DATETIME,
-    PRIMARY KEY (UCINetID, projectID, machineID),
-    FOREIGN KEY (UCINetID) REFERENCES Student(UCINetID),
-    FOREIGN KEY (projectID) REFERENCES Project(projectID),
-    FOREIGN KEY (machineID) REFERENCES Machine(machineID)
+-- Use Relationship Table
+CREATE TABLE StudentUseMachinesInProject (
+    ProjectID INT,
+    StudentUCINetID VARCHAR(20),
+    MachineID INT,
+    StartDate DATETIME,
+    EndDate DATETIME,
+    PRIMARY KEY (ProjectID, StudentUCINetID, MachineID),
+    FOREIGN KEY (ProjectID) REFERENCES Projects(ProjectID),
+    FOREIGN KEY (StudentUCINetID) REFERENCES Students(UCINetID),
+    FOREIGN KEY (MachineID) REFERENCES Machines(MachineID)
 );
 
-
--- Administrator machine relation
-CREATE TABLE manages (
-    UCINetID VARCHAR(20),
-    machineID INTEGER,
-    PRIMARY KEY (UCINetID, machineID),
-    FOREIGN KEY (UCINetID) REFERENCES Administrator(UCINetID),
-    FOREIGN KEY (machineID) REFERENCES Machine(machineID)
+-- Administrator Machine Management Table
+CREATE TABLE AdministratorManageMachines (
+    AdministratorUCINetID VARCHAR(20),
+    MachineID INT,
+    PRIMARY KEY (AdministratorUCINetID, MachineID),
+    FOREIGN KEY (AdministratorUCINetID) REFERENCES Administrators(UCINetID),
+    FOREIGN KEY (MachineID) REFERENCES Machines(MachineID)
 );
