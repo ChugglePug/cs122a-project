@@ -43,6 +43,7 @@ CREATE TABLE Projects (
     Description TEXT,
     CourseID INT NOT NULL,
     FOREIGN KEY (CourseID) REFERENCES Courses(CourseID)
+        ON DELETE CASCADE
 );
 
 -- Machine Table
@@ -63,9 +64,12 @@ CREATE TABLE StudentUseMachinesInProject (
     StartDate DATETIME,
     EndDate DATETIME,
     PRIMARY KEY (ProjectID, StudentUCINetID, MachineID),
-    FOREIGN KEY (ProjectID) REFERENCES Projects(ProjectID),
-    FOREIGN KEY (StudentUCINetID) REFERENCES Students(UCINetID),
+    FOREIGN KEY (ProjectID) REFERENCES Projects(ProjectID)
+        ON DELETE CASCADE,
+    FOREIGN KEY (StudentUCINetID) REFERENCES Students(UCINetID)
+        ON DELETE CASCADE,
     FOREIGN KEY (MachineID) REFERENCES Machines(MachineID)
+        ON DELETE CASCADE
 );
 
 -- Administrator Machine Management Table
@@ -73,6 +77,8 @@ CREATE TABLE AdministratorManageMachines (
     AdministratorUCINetID VARCHAR(20),
     MachineID INT,
     PRIMARY KEY (AdministratorUCINetID, MachineID),
-    FOREIGN KEY (AdministratorUCINetID) REFERENCES Administrators(UCINetID),
+    FOREIGN KEY (AdministratorUCINetID) REFERENCES Administrators(UCINetID)
+        ON DELETE CASCADE,
     FOREIGN KEY (MachineID) REFERENCES Machines(MachineID)
+        ON DELETE CASCADE
 );
