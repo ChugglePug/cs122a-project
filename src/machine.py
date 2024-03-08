@@ -1,7 +1,7 @@
 # machine.py
 
 from mysql.connector.abstracts import MySQLCursorAbstract
-from parsing import format_list
+from .parsing import format_list
 
 
 def insert_machine(cursor: MySQLCursorAbstract, args: list[str]):

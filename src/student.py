@@ -64,9 +64,10 @@ def delete_student(cursor: MySQLCursorAbstract, args: list[str]) -> bool:
     indicator = False
     find_user = """
         SELECT *
-        FROM Users U
+        FROM Users
+        WHERE UCINetID = (%s)
     """
-    cursor.execute(find_user)
+    cursor.execute(find_user, format_list([args[0]]))
     results = cursor.fetchall()
     for result in results:
         if result[0] == args[0]:

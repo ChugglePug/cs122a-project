@@ -4,7 +4,6 @@
 
 from pathlib import Path
 
-import mysql.connector.errors
 from mysql.connector.abstracts import MySQLCursorAbstract
 from .parsing import format_list, format_table
 
