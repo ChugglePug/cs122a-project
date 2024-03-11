@@ -1,8 +1,10 @@
 # machine.py
 
 from mysql.connector.abstracts import MySQLCursorAbstract
-from .parsing import format_list
-
+try:
+    from .parsing import format_list
+except ImportError:
+    from parsing import format_list
 
 def insert_machine(cursor: MySQLCursorAbstract, args: list[str]):
     indicator = False
@@ -13,13 +15,13 @@ def insert_machine(cursor: MySQLCursorAbstract, args: list[str]):
     cursor.execute(find_machine_stmt)
     results = cursor.fetchall()
     for result in results:
-        if result[0] == int(args[0]):
-            print("found machine")
+        if str(result[0]) == args[0]:
+            # print("found machine")
             indicator = True
             break
     if indicator:
-        print("machine record already exists!")
-        return indicator
+        # print("machine record already exists!")
+        return False
     else:
         insert_machine_stmt = """
             INSERT INTO Machines
@@ -28,7 +30,8 @@ def insert_machine(cursor: MySQLCursorAbstract, args: list[str]):
             (%s,%s,%s,%s,%s);
         """
         cursor.execute(insert_machine_stmt, format_list(args))
-        print("Add Machine Record Successfully !")
+        # print("Add Machine Record Successfully !")
+        indicator = True
         return indicator
 
 
@@ -43,7 +46,7 @@ def insert_use_record(cursor: MySQLCursorAbstract, args: list[str]):
     cursor.execute(find_machine_stmt)
     results = cursor.fetchall()
     for result in results:
-        if result[0] == int(args[2]):
+        if str(result[0]) == args[2]:
             indicator1 = True
             break
     find_student_stmt = """
@@ -63,7 +66,7 @@ def insert_use_record(cursor: MySQLCursorAbstract, args: list[str]):
     cursor.execute(find_project_stmt)
     results = cursor.fetchall()
     for result in results:
-        if result[0] == int(args[0]):
+        if str(result[0]) == args[0]:
             indicator3 = True
             break
     if indicator1 and indicator2 and indicator3:
@@ -74,8 +77,17 @@ def insert_use_record(cursor: MySQLCursorAbstract, args: list[str]):
             (%s,%s, %s, %s, %s)
         """
         cursor.execute(insert_user_record_stmt, format_list(args))
-        print("Insert Student Use Record Successfully !")
+        # print("Insert Student Use Record Successfully !")
         return True
 
     else:
         return False
+
+
+def admin_emails() -> list[str]:
+    # Get UCINetID of Admins
+    cursor: MySQLCursorAbstract
+    admin_id_stmt = """
+        SELECT     
+    """
+    cursor.execute()

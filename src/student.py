@@ -5,7 +5,10 @@
 
 import mysql.connector.errors
 from mysql.connector.abstracts import MySQLCursorAbstract
-from .parsing import format_list
+try:
+    from .parsing import format_list
+except ImportError:
+    from parsing import format_list
 
 
 def add_student(cursor: MySQLCursorAbstract, args: list[str]) -> bool:

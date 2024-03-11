@@ -5,7 +5,10 @@
 from pathlib import Path
 
 from mysql.connector.abstracts import MySQLCursorAbstract
-from .parsing import format_list, format_table
+try:
+    from .parsing import format_list
+except ImportError:
+    from parsing import format_list
 
 
 def _drop_all_tables(cursor):
@@ -123,7 +126,7 @@ def _load_manage(cursor: MySQLCursorAbstract, folder_name):
             VALUES (%s, %s)""", values)
 
 
-def load_database(cursor: MySQLCursorAbstract, folder_name: str) -> str:
+def load_database(cursor: MySQLCursorAbstract, folder_name: str) -> tuple:
     """
     Loads the data of the folder into the database for use
     :param cursor: cursor object
@@ -154,8 +157,7 @@ def load_database(cursor: MySQLCursorAbstract, folder_name: str) -> str:
 
     # Some error when reading
 
-    counts = [user_count, machine_count, course_count]
-    return format_table(counts)
+    return (user_count, machine_count, course_count)
 
 
 def create_database(cursor: MySQLCursorAbstract, database_name):
