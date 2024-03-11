@@ -1,7 +1,7 @@
 # tests.py
 
 import unittest
-import project
+from src import project
 import shlex
 
 # used to test output to stdout

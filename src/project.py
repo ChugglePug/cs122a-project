@@ -12,7 +12,7 @@ except ModuleNotFoundError:
     import database
     import machine
     import parsing
-    import src.queries
+    import queries
     import student
 from typing import Any
 
