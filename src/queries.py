@@ -3,7 +3,7 @@
 from mysql.connector.abstracts import MySQLCursorAbstract
 from mysql.connector import DATETIME
 try:
-    from .parsing import format_list
+    from src.parsing import format_list
 except ImportError:
     from parsing import format_list
 
