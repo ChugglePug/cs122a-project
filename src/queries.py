@@ -67,12 +67,14 @@ def activeStudent(cursor: MySQLCursorAbstract, args: list[str]):
 
 def machineUsage(cursor: MySQLCursorAbstract, courseID: int):
     statement = """
-            SELECT M.machineID, hostname, IPAddress, IF(M.machineID = S.machineID AND Count(S.machineID) > 0, Count(S.machineID), 0)
-            FROM Machines M, StudentUseMachinesInProject S
-            INNER JOIN Projects AS P ON P.projectID = S.projectID
-            WHERE P.courseID = %s
-            GROUP BY M.machineID, S.machineID
-            ORDER BY M.machineID DESC
+        SELECT M.machineID, M.Hostname, M.IPAddress, COUNT(IF(M.MachineID = SMP.MachineID, True, NULL))
+        FROM Machines M, StudentUseMachinesInProject SMP
+            INNER JOIN (SELECT ProjectID, CourseID
+                        FROM Projects) AS P 
+                ON P.ProjectID = SMP.ProjectID
+        WHERE P.CourseID = %s
+        GROUP BY M.MachineID
+        ORDER BY M.machineID DESC
     """
     cursor.execute(statement, [courseID])
     results = cursor.fetchall()

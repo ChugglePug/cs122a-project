@@ -62,7 +62,7 @@ def list_popular_courses(cursor: MySQLCursorAbstract, n: int):
         follows the format of: [N:int]
     """
     query = """
-    SELECT c.courseID, c.title, c.quarter, COUNT(DISTINCT u.StudentUCINetID) as studentCount
+    SELECT c.courseID, c.title, COUNT(DISTINCT u.StudentUCINetID) as studentCount
     FROM Courses c
     JOIN Projects p ON c.courseID = p.courseID
     JOIN StudentUseMachinesInProject u ON p.projectID = u.projectID

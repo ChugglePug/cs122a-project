@@ -98,5 +98,4 @@ if __name__ == '__main__':
         'password': 'password',
         'database': 'cs122a'
     }
-    print(sys.argv)
     main(sys.argv, autograder_connection)
