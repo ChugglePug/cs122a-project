@@ -133,12 +133,10 @@ def load_database(cursor: MySQLCursorAbstract, folder_name: str) -> tuple:
     :param folder_name: Folder to read from.
     :return:
     """
-    # Default value for counts of nothing was added
-    counts = [0, 0, 0]
 
     # do nothing if not a dir
     if not (Path(__file__).parent.parent / folder_name).is_dir():
-        raise NotADirectoryError
+        return 0, 0, 0
 
     # Drops the tables currently existing in the database
     _drop_all_tables(cursor)
@@ -155,9 +153,7 @@ def load_database(cursor: MySQLCursorAbstract, folder_name: str) -> tuple:
     _load_use(cursor, folder_name)
     _load_manage(cursor, folder_name)
 
-    # Some error when reading
-
-    return (user_count, machine_count, course_count)
+    return user_count, machine_count, course_count
 
 
 def create_database(cursor: MySQLCursorAbstract, database_name):

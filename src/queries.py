@@ -9,6 +9,15 @@ except ImportError:
 
 
 def adminEmails(cursor: MySQLCursorAbstract, machineId: int):
+    # Edge Case: machine_id does not exist
+    exist_statement = """
+    SELECT *
+    FROM Machines
+    WHERE MachineID = %s
+    """
+    cursor.execute(exist_statement, (machineId,))
+    if len(cursor.fetchall()) == 0:
+        return False
     select_statement = """
             SELECT U.UCINETId, firstName, middleName, lastName
             FROM Users AS U

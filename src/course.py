@@ -20,6 +20,17 @@ def update_course(cursor: MySQLCursorAbstract, course_id: int, title: str) -> bo
         # Check if the course was actually updated by examining affected rows
         # (because the course being updated can be empty)
         if cursor.rowcount == 0:
+            # Edge Case: Changing the course to the same name
+            # The database reports no change, this should not be a fail case
+            no_change_query = """
+                    SELECT Title
+                    FROM Courses
+                    WHERE CourseID = %s
+                    """
+            cursor.execute(no_change_query, (course_id,))
+            old_title = cursor.fetchall()[0][0]
+            if old_title == title:
+                return True
             # No rows were affected, meaning the course does not exist
             return False
         else:
@@ -37,6 +48,16 @@ def list_course(cursor: MySQLCursorAbstract, UCINetID: str):
     :param args: UCINetID
         follows the format of: [UCINetID:str]
     """
+    # check if the user is a student
+    exist_query = """
+    SELECT *
+    FROM Students
+    WHERE UCINetID = %s
+    """
+    cursor.execute(exist_query, (UCINetID,))
+    if len(cursor.fetchall()) == 0:
+        return False
+
     query = """
     SELECT DISTINCT c.courseID, c.title, c.quarter
     FROM Courses c
@@ -49,8 +70,8 @@ def list_course(cursor: MySQLCursorAbstract, UCINetID: str):
     courses = list()
     for row in cursor.fetchall():
         courses.append(row)
-    if len(courses) == 0:
-        return False
+    # if len(courses) == 0:
+    #     return False
     return courses
 
 
@@ -61,6 +82,9 @@ def list_popular_courses(cursor: MySQLCursorAbstract, n: int):
     :param args: Number of Courses, n
         follows the format of: [N:int]
     """
+    # Edge Case: return 0 courses
+    if n == 0:
+        return []
     query = """
     SELECT c.courseID, c.title, COUNT(DISTINCT u.StudentUCINetID) as studentCount
     FROM Courses c
