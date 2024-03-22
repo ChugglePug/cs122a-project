@@ -309,7 +309,9 @@ class ProjectTests(unittest.TestCase):
     def test_courses_attended_non_existent_student(self):
         # Is in no projects and therefore no course
         args = self.add_to_argv('listCourse nonexistent')
-        expected_output = 'Fail'
+        expected_output = _format_to_output(
+            []
+        )
 
         with contextlib.redirect_stdout(io.StringIO()) as output:
             _run_main(args)
@@ -433,7 +435,80 @@ class ProjectTests(unittest.TestCase):
 
     def test_admin_emails_invalid_machine_id(self):
         args = self.add_to_argv('adminEmails 102')
-        expected_output = 'Fail'
+        expected_output = _format_to_output(
+            []
+        )
+
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            _run_main(args)
+
+        self.assertEqual(output.getvalue().strip(), expected_output)
+
+    def test_active_students_can_find_students(self):
+        args = self.add_to_argv('activeStudent 4 1 2020-01-01 2020-01-30')
+        expected_output = _format_to_output(
+            [('mchang13', 'Megan', 'NULL', 'Chang')]
+        )
+
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            _run_main(args)
+
+        self.assertEqual(output.getvalue().strip(), expected_output)
+
+    def test_active_students_nonexistent_machine(self):
+        args = self.add_to_argv('activeStudent 102 1 2020-01-04 2020-01-05')
+        expected_output = _format_to_output(
+            []
+        )
+
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            _run_main(args)
+
+        self.assertEqual(output.getvalue().strip(), expected_output)
+
+    def test_active_students_from_too_far_date(self):
+        args = self.add_to_argv('activeStudent 1 1 1970-01-01 1970-01-02')
+        expected_output = _format_to_output(
+            []
+        )
+
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            _run_main(args)
+
+        self.assertEqual(output.getvalue().strip(), expected_output)
+
+    def test_active_students_did_not_use_enough(self):
+        args = self.add_to_argv('activeStudent 1 100 2020-01-04 2020-01-05')
+        expected_output = _format_to_output(
+            []
+        )
+
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            _run_main(args)
+
+        self.assertEqual(output.getvalue().strip(), expected_output)
+
+    def test_machine_usage_counts_usage(self):
+        args = self.add_to_argv('machineUsage 1')
+        expected_output = _format_to_output(
+            [('6', 'compute3', '192.168.20.3', '0'),
+             ('5', 'compute2', '192.168.20.2', '0'),
+             ('4', 'compute1', '192.168.20.1', '0'),
+             ('3', 'gpu3', '192.168.10.3', '0'),
+             ('2', 'gpu2', '192.168.10.2', '0'),
+             ('1', 'gpu1', '192.168.10.1', '1')]
+        )
+
+        with contextlib.redirect_stdout(io.StringIO()) as output:
+            _run_main(args)
+
+        self.assertEqual(output.getvalue().strip(), expected_output)
+
+    def test_machine_counts_nonexistent_machine(self):
+        args = self.add_to_argv('machineUsage 102')
+        expected_output = _format_to_output(
+            []
+        )
 
         with contextlib.redirect_stdout(io.StringIO()) as output:
             _run_main(args)

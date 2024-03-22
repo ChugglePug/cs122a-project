@@ -10,14 +10,14 @@ except ImportError:
 
 def adminEmails(cursor: MySQLCursorAbstract, machineId: int):
     # Edge Case: machine_id does not exist
-    exist_statement = """
-    SELECT *
-    FROM Machines
-    WHERE MachineID = %s
-    """
-    cursor.execute(exist_statement, (machineId,))
-    if len(cursor.fetchall()) == 0:
-        return False
+    # exist_statement = """
+    # SELECT *
+    # FROM Machines
+    # WHERE MachineID = %s
+    # """
+    # cursor.execute(exist_statement, (machineId,))
+    # if len(cursor.fetchall()) == 0:
+    #     return False
     select_statement = """
             SELECT U.UCINETId, firstName, middleName, lastName
             FROM Users AS U
@@ -52,6 +52,15 @@ def adminEmails(cursor: MySQLCursorAbstract, machineId: int):
 
 
 def activeStudent(cursor: MySQLCursorAbstract, args: list[str]):
+    # Edge Cases: Machine does not exist
+    # machine_exist_statement = """
+    # SELECT *
+    # FROM Machines
+    # WHERE MachineID = %s
+    # """
+    # cursor.execute(machine_exist_statement, format_list(args)[:1])
+    # if len(cursor.fetchall()) == 0:
+    #     return False
     select_statement = """
             SELECT Users.UCINetID, firstName, middleName, lastName
             FROM Users
@@ -69,10 +78,7 @@ def activeStudent(cursor: MySQLCursorAbstract, args: list[str]):
     organized_args.append(organized_args.pop(1))
     cursor.execute(select_statement, organized_args)
     results = cursor.fetchall()
-    if len(results) == 0:
-        return False
     return results
-
 
 def machineUsage(cursor: MySQLCursorAbstract, courseID: int):
     statement = """
@@ -87,7 +93,7 @@ def machineUsage(cursor: MySQLCursorAbstract, courseID: int):
     """
     cursor.execute(statement, [courseID])
     results = cursor.fetchall()
-    if len(results) == 0:
-        return False
+    # if len(results) == 0:
+    #     return False
     return results
             

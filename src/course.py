@@ -49,14 +49,14 @@ def list_course(cursor: MySQLCursorAbstract, UCINetID: str):
         follows the format of: [UCINetID:str]
     """
     # check if the user is a student
-    exist_query = """
-    SELECT *
-    FROM Students
-    WHERE UCINetID = %s
-    """
-    cursor.execute(exist_query, (UCINetID,))
-    if len(cursor.fetchall()) == 0:
-        return False
+    # exist_query = """
+    # SELECT *
+    # FROM Students
+    # WHERE UCINetID = %s
+    # """
+    # cursor.execute(exist_query, (UCINetID,))
+    # if len(cursor.fetchall()) == 0:
+    #     return False
 
     query = """
     SELECT DISTINCT c.courseID, c.title, c.quarter

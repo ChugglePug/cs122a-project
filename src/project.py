@@ -27,6 +27,7 @@ def main(args: list[str], connection_info: dict[str, str]) -> Any:
 
     # User might not have database created yet, so one is created if so
     database_name = connection_info['database']
+    return_value = False
 
     with mysql.connector.connect(**{key: value for key, value in connection_info.items() if key != 'database'}) as cnx:
         try:
@@ -71,7 +72,6 @@ def main(args: list[str], connection_info: dict[str, str]) -> Any:
         # something went wrong
         except (NotADirectoryError, mysql.connector.errors.ProgrammingError,
                 mysql.connector.errors.IntegrityError) as e:
-            return_value = False
             # tb = e.__traceback__
             # while tb is not None:
             #     print("File:", tb.tb_frame.f_code.co_filename, end=', ')
